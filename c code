@@ -1,0 +1,441 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<conio.h>
+
+typedef struct disciplina
+{
+    char denumirea [100];
+    int anul;
+    char facultatea [100];
+    char departamentul [100];
+    int nr_de_ore;
+} Disciplina;
+
+void readArrayOfDiscipline(Disciplina *S, int n);
+int searchDisciplina(Disciplina*S,int n,char* num);
+void sortDiscipline(Disciplina *S, int n);
+void modifyDisciplina(Disciplina*S, int k);
+Disciplina* appendDisciplina(Disciplina* S, int *pn,Disciplina a);
+Disciplina* deleteDisciplina(Disciplina* S, int *pn,int k);
+Disciplina* insertDisciplina(Disciplina* S, int *pn,Disciplina a,int k);
+void showArrayOfDiscipline(Disciplina *S, int n);
+int save(Disciplina* S, int n, char *fname);
+int load(Disciplina* S, int n, char* fname);
+
+int main()
+{
+    Disciplina *S,*B, a;
+    char num[100], fname[100];
+    int n,nm,f, k;
+    while(1)
+    {
+        system("cls");
+        puts("\t MENU:");
+        puts("1. Alocarea dinamica a memoriei p/u tabl. de structuri");
+        puts("2. Introducerea elementelor tabloului de la tastatura");
+        puts("3. Cautarea elementului tabloului");
+        puts("4. Sortarea elementelor tabloului (conform variantelor)");
+        puts("5. Redactarea elementului tabloului");
+        puts("6. Adaugarea unui element nou la sfirsit");
+        puts("7. Eliminarea elementului indicat din tablou ");
+        puts("8. Inserarea unui element nou ");
+        puts("9. Salvarea elementelor tabloului in fisier ");
+        puts("10. Citirea elementelor tabloului din fisier ");
+        puts("11. Extragerea elementelor tabloului la ecran ");
+        puts("12. Eliberarea memoriei alocate pentru tablou ");
+        puts("0. Iesire din program ");
+
+        printf("\nAlegeti optiunea din menu: ");
+        scanf("%d", &nm);
+
+        switch(nm)
+        {
+        case 1:
+            printf("Dati numarul de disciplini: ");
+            scanf("%d", &n);
+
+            S= (Disciplina*)malloc(n*sizeof(Disciplina));
+            if(S==NULL)
+            {
+                puts("Memoria nu a fost alocata");
+                exit (1);
+            }
+            puts("Memoria a fost alocata cu succes");
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        case 2:
+            puts("Dati info despre disciplini:  ");
+            readArrayOfDiscipline(S,n);
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        case 3:
+            puts("Dati numele disciplinei de cautat:");
+            fflush(stdin);
+            gets(num);
+            k=searchDisciplina(S,n,num);
+            if(k<0)
+            {
+                puts("Disciplina cautata nu a fost gasita in tablou ");
+            }
+            else
+            {
+                puts("Info despre disciplina: ");
+                printf("Denumirea: %s Anul: %d Facultatea: %s Departamentul: %s Nr de ore: %d\n",S[k].denumirea,S[k].anul,S[k].facultatea,S[k].departamentul,S[k].nr_de_ore);
+            }
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        case 4:
+            sortDiscipline(S, n);
+            puts("Sortaea s-a efectuat cu succes");
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        case 5:
+            puts("Dati denumirea disciplinii de modificat:");
+            fflush(stdin);
+            gets(num);
+            k=searchDisciplina(S,n,num);
+            if(k<0)
+            {
+                puts("Disciplina cautata nu a fost gasita in tablou ");
+            }
+            else
+            {
+                puts("Info despre disciplina: ");
+                printf("Denumirea: %s Anul: %d Facultatea: %s Departamentul: %s Nr de ore: %d\n",S[k].denumirea,S[k].anul,S[k].facultatea,S[k].departamentul,S[k].nr_de_ore);
+                modifyDisciplina(S,  k);
+            }
+
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        case 6:
+            puts("Dati info despre disciplina de adaugat:");
+            printf("Dati denumirea disciplinii: ");
+            fflush(stdin);
+            gets(a.denumirea);
+            printf("Dati anul: ");
+            scanf("%d", &a.anul );
+            printf("Dati facultatea: ");
+            fflush(stdin);
+            gets(a.facultatea );
+            printf("Dati departamentul ");
+            fflush(stdin);
+            gets(a.departamentul);
+            printf("Dati nr de ore: ");
+            scanf("%d", &a.nr_de_ore);
+            B=appendDisciplina(S, &n, a);
+            if(B==NULL)
+            {
+                puts("Adaugarea elementului la sfirsit nu a avut loc");
+            }
+            else
+            {
+                puts("Adaugarea elementului la sfirsit s-a efectuat cu succes");
+                S=B;
+            }
+
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        case 7:
+            puts("Dati denumirea disciplinii de sters:");
+            fflush(stdin);
+            gets(num);
+            k=searchDisciplina(S,n,num);
+            if(k<0)
+            {
+                puts("Disciplina de sters nu a fost gasita in tablou ");
+            }
+            else
+            {
+                puts("Info despre Disciplina: ");
+                printf("Denumirea: %s Anul: %d Facultatea: %s Departamentul: %s Nr de ore: %d\n",S[k].denumirea,S[k].anul,S[k].facultatea,S[k].departamentul,S[k].nr_de_ore);
+                B=deleteDisciplina(S, &n, k);
+                if(B==NULL)
+                {
+                    puts("Stergerea elementului nu a avut loc");
+                }
+                else
+                {
+                    puts("Stergerea elementului s-a efectuat cu succes");
+                    S=B;
+                }
+            }
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+
+        case 8:
+            puts("Dati info despre disciplina de inserat:");
+            printf("Dati denumirea disciplinii: ");
+            fflush(stdin);
+            gets(a.denumirea);
+            printf("Dati anul: ");
+            scanf("%d", &a.anul );
+            printf("Dati facultatea: ");
+            fflush(stdin);
+            gets(a.facultatea );
+            printf("Dati departamentul: ");
+            fflush(stdin);
+            gets(a.departamentul);
+            printf("Dati nr de ore: ");
+            scanf("%.2f", &a.nr_de_ore);
+            B=insertDisciplina(S, &n, a,k-1);
+            if(B==NULL)
+            {
+                puts("Inserarea elementului nu a avut loc");
+            }
+            else
+            {
+                puts("Inserarea elementului s-a efectuat cu succes");
+                S=B;
+            }
+
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        case 9:
+            puts("Dati numele fisierului:");
+            fflush(stdin);
+            gets(fname);
+            f=save(S,n,fname);
+            if(f==1) puts("Citirea din fisier s-a efectuat cu succes");
+            else puts("Fisierul pentru a citi info despre disciplina nu a fost deschis");
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        case 10:
+            puts("Dati numele fisierului:");
+            fflush(stdin);
+            gets(fname);
+            f=load(S,n,fname);
+            if(f==1) puts("Citirea din fisier s-a efectuat cu succes");
+            else puts("Fisierul pentru a citi info despre disciplina nu a fost deschis");
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        case 11:
+            puts("Info despre disciplina: ");
+            showArrayOfDiscipline(S, n);
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        case 12:
+            free(S);
+            S=NULL;
+            puts("Eliberarea memoriei s-a efectuat cu succes");
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        case 0:
+            printf("Doriti sa iesiti din program? (1/0): ");
+            scanf("%d", &f);
+            if(f==1) return 0;
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+            break;
+        default:
+            puts("Alegeti optiunea corecta din menu! ");
+            puts("Pentru a continua apasati tasta Enter");
+            getch();
+        }
+    }
+}
+
+void readArrayOfDiscipline(Disciplina *S, int n)
+{
+    int i;
+    for(i=0; i<n; i++)
+    {
+        printf("Disciplina %d:\n ", i+1);
+        printf("Dati denumirea disciplinii: ");
+        fflush(stdin);
+        gets(S[i].denumirea);
+        printf("Anul: ");
+        scanf("%d", &S[i].anul);
+        printf("Facultatea: ");
+        fflush(stdin);
+        gets(S[i].facultatea);
+        printf("Departamentul: ");
+        fflush(stdin);
+        gets(S[i].departamentul);
+        printf("Nr de ore: ");
+        scanf("%d", &S[i].nr_de_ore);
+    }
+    return;
+}
+
+int searchDisciplina(Disciplina*S,int n,char* num)
+{
+    int i;
+    for(i=0; i<n; i++)
+    {
+        if(strcmp(S[i].denumirea, num)==0)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void sortDiscipline(Disciplina *S, int n)
+{
+    int i,k;
+    Disciplina t;
+    for(i=0; i<n; i++)
+    {
+        for(k=0; k<n-1-i; k++)
+        {
+            if(stricmp(S[k].denumirea,S[k+1].denumirea)>0)
+            {
+                t=S[k];
+                S[k]=S[k+1];
+                S[k+1]=t;
+            }
+        }
+    }
+    return;
+}
+
+void showArrayOfDiscipline(Disciplina *S, int n)
+{
+    int i;
+    for(i=0; i<n; i++)
+    {
+        printf("%d. Denumirea: %s\n Anul: %d\n Facultatea: %s\n Departamentul: %s\n Nr de ore: %d\n",i+1,S[i].denumirea,S[i].anul,S[i].facultatea,S[i].departamentul,S[i].nr_de_ore);
+    }
+    return;
+}
+
+void modifyDisciplina(Disciplina*S, int k)
+{
+    int f;
+    printf("De modificat denumirea disciplinii? (1/0):  ");
+    scanf("%d", &f);
+    if(f!=0)
+    {
+        printf("Dati denumirea disciplinii:");
+        fflush(stdin);
+        gets(S[k].denumirea);
+    }
+    printf("De modificat anul? (1/0):  ");
+    scanf("%d", &f);
+    if(f!=0)
+    {
+        printf("Dati anul:");
+        scanf("%d", &S[k].anul);
+    }
+    printf("De modificat facultatea? (1/0):  ");
+    scanf("%d", &f);
+    if(f!=0)
+    {
+        printf("Dati facultatea:");
+        fflush(stdin);
+        gets(S[k].facultatea);
+    }
+    printf("De modificat departamentul? (1/0):  ");
+    scanf("%d", &f);
+    if(f!=0)
+    {
+        printf("Dati departamentul:");
+        fflush(stdin);
+        gets(S[k].departamentul);
+    }
+    printf("De modificat nr de ore? (1/0):  ");
+    scanf("%d", &f);
+    if(f!=0)
+    {
+        printf("Dati nr de ore:");
+        scanf("%d", &S[k].nr_de_ore);
+    }
+    return;
+}
+
+Disciplina* appendDisciplina(Disciplina* S, int *pn,Disciplina a)
+{
+    Disciplina * B;
+    B=(Disciplina*)realloc(S,((*pn)+1)*sizeof(Disciplina));
+    if(B==NULL)
+    {
+        return B;
+    }
+    B[*pn]= a;
+    *pn=*pn+1;
+    return B;
+}
+
+Disciplina* deleteDisciplina(Disciplina* S,int *pn, int k)
+{
+    Disciplina *B;
+    int i;
+    for(i=k; i<*pn-1; i++)
+    {
+        S[i]=S[i+1];
+    }
+    B=(Disciplina*)realloc(S,((*pn)-1)*sizeof(Disciplina));
+    if(B==NULL)
+    {
+        return B;
+    }
+    *pn=*pn-1;
+    return B;
+}
+
+Disciplina* insertDisciplina(Disciplina* S, int *pn,Disciplina a,int k)
+{
+    Disciplina * B;
+    int i;
+    B=(Disciplina*)realloc(S,((*pn)+1)*sizeof(Disciplina));
+    if(B==NULL)
+    {
+        return B;
+    }
+    for(i=*pn-1; i>=k; i--)
+    {
+        B[i+1]=B[i];
+    }
+    B[k]=a;
+    *pn=*pn+1;
+    return B;
+}
+
+int save(Disciplina* S, int n, char *fname)
+{
+    FILE *fp;
+    int i;
+    fp=fopen(fname,"w");
+    if(fp==NULL)
+    {
+        return 0;
+    }
+    for(i=0; i<n; i++)
+    {
+        fprintf(fp, "%s %d %s %s %d", S[i].denumirea, S[i].anul,S[i].facultatea,S[i].departamentul,S[i].nr_de_ore);
+    }
+    fclose(fp);
+    return 1;
+
+}
+
+int load(Disciplina* S, int n, char *fname)
+{
+    FILE *fp;
+    int i;
+    fp=fopen(fname,"r");
+    if(fp==NULL)
+    {
+        return 0;
+    }
+    for(i=0; i<n; i++)
+    {
+        fscanf(fp, "%s%d%s%s%d", S[i].denumirea, S[i].anul,S[i].facultatea,S[i].departamentul,S[i].nr_de_ore);
+    }
+    fclose(fp);
+    return 1;
+
+}
